@@ -1,1 +1,0 @@
-# Virtual-Laboratorium-Fisika-Simulasi-Interaktif-Bidang-Miring-Katrol-dan-Perubahan-Energi
