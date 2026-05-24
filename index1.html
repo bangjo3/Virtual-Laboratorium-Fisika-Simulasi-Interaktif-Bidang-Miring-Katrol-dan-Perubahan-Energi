@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Virtual Laboratorium Fisika</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    background: #0284c7; /* Background biru terang sesuai gambar */
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* --- TAMPILAN MENU UTAMA (LANDING PAGE) --- */
+.main-menu-container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.main-header h1 {
+    font-size: 45px;
+    color: white;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.main-header p {
+    font-size: 18px;
+    color: #e0f2fe;
+    margin-bottom: 40px;
+}
+
+.grid-menu {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 25px;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.card-icon {
+    font-size: 50px;
+    color: #0284c7;
+    margin-bottom: 15px;
+}
+
+/* Desain khusus icon menggunakan SVG agar mirip dengan gambar */
+.icon-svg {
+    width: 60px;
+    height: 60px;
+    fill: #0284c7;
+    margin-bottom: 15px;
+}
+
+.card h3 {
+    font-size: 22px;
+    color: #1e293b;
+    margin-bottom: 12px;
+    font-weight: bold;
+}
+
+.card p {
+    font-size: 14px;
+    color: #64748b;
+    line-height: 1.5;
+}
+
+/* --- TAMPILAN LAB / SIMULASI (TERSEMBUNYI DI AWAL) --- */
+.lab-interface {
+    display: none;
+    width: 100%;
+    background: linear-gradient(-45deg,#020617,#0f172a,#1e293b,#0f172a);
+    background-size: 400% 400%;
+    animation: bgAnim 10s ease infinite;
+    color: white;
+    min-height: 100vh;
+}
+
+@keyframes bgAnim{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+.btn-back {
+    background: #e2e8f0;
+    color: #1e293b;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 20px 0 0 20px;
+    transition: 0.2s;
+}
+
+.btn-back:hover {
+    background: white;
+}
+
+header {
+    text-align: center;
+    padding: 20px;
+}
+
+header h1 {
+    font-size: 40px;
+    color: #38bdf8;
+    text-shadow: 0 0 20px cyan;
+}
+
+header p {
+    margin-top: 10px;
+    color: #cbd5e1;
+}
+
+.menu {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.menu button,
+.toolbox button,
+.control button {
+    padding: 14px 25px;
+    border: none;
+    border-radius: 15px;
+    background:#06b6d4;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 0 15px rgba(0,255,255,0.4);
+}
+
+.menu button:hover,
+.toolbox button:hover,
+.control button:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 0 25px cyan;
+}
+
+.container {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    flex-wrap: wrap;
+}
+
+.toolbox,
+.control {
+    background: rgba(30,41,59,0.75);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    border-radius: 20px;
+    padding: 20px;
+}
+
+.toolbox {
+    width: 250px;
+}
+
+.toolbox h2,
+.control h2 {
+    color: #38bdf8;
+    margin-bottom: 20px;
+}
+
+.toolbox button {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.canvas-box {
+    flex: 1;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+canvas {
+    width: 100%;
+    background: #87ceeb;
+    border-radius: 20px;
+    border: 4px solid rgba(255,255,255,0.2);
+}
+
+.control {
+    width: 320px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.input-group input {
+    width: 100%;
+}
+
+.step-box,
+.output {
+    background: #0f172a;
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
+
+.output p {
+    margin: 10px 0;
+}
+
+/* Modal Popup untuk Informasi Pembuat Web & Teori */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.modal-content h2 {
+    margin-bottom: 15px;
+    color: #0284c7;
+}
+
+.modal-content p {
+    font-size: 16px;
+    color: #475569;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.modal-content ul {
+    list-style: none;
+    margin-bottom: 20px;
+}
+
+.modal-content ul li {
+    font-size: 18px;
+    font-weight: bold;
+    color: #1e293b;
+    margin: 8px 0;
+}
+
+.btn-close {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+@media(max-width: 1000px){
+    .grid-menu {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .container {
+        flex-direction: column;
+    }
+    .toolbox,
+    .control {
+        width: 100%;
+    }
+}
+
+@media(max-width: 600px){
+    .grid-menu {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="main-menu-container" id="mainMenu">
+    <div class="main-header">
+        <h1>Virtual Laboratorium Fisika</h1>
+        <p>Simulasi Interaktif Bidang Miring, Katrol, dan Perubahan Energi</p>
+    </div>
+
+    <div class="grid-menu">
+        <div class="card" onclick="openSimulasi('miring')">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm11-15.34L19.34 19H4.66L12 5.66z"/></svg>
+            <h3>Bidang Miring</h3>
+            <p>Simulasi gaya, percepatan, dan gerak benda pada bidang miring</p>
+        </div>
+
+        <div class="card" onclick="openSimulasi('katrol')">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            <h3>Katrol</h3>
+            <p>Praktikum sistem katrol dengan massa gantung dan tegangan tali</p>
+        </div>
+
+        <div class="card" onclick="openSimulasi('energi')">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 2.69c.51 1 .9 2.18.9 3.43 0 3.32-2.68 6-6 6s-6-2.68-6-6c0-1.25.39-2.43.9-3.43C3.62 4.34 2 6.98 2 10c0 5.52 4.48 10 10 10s10-4.48 10-10c0-3.02-1.62-5.66-3.9-7.31z"/></svg>
+            <h3>Perubahan Energi</h3>
+            <p>Simulasi energi panas, suhu, dan perpindahan kalor</p>
+        </div>
+
+        <div class="card" onclick="showTeori('Bidang Miring', 'Materi mengenai gaya normal, gaya penggerak (m*g*sinθ), gaya gesek (μ*N), percepatan benda tanpa atau dengan hambatan pada lintasan miring.')">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 3p-10 9h3v8h14v-8h3l-10-9zm6 15H6v-7.81l6-5.4 6 5.4V18z"/></svg>
+            <h3>Teori Bidang Miring</h3>
+            <p>Materi gaya, percepatan, dan gerak pada bidang miring</p>
+        </div>
+
+        <div class="card" onclick="showTeori('Katrol', 'Materi mengenai hukum Newton pada sistem katrol tunggal maupun kombinasi, menghitung tegangan tali (T), dan efek perbedaan massa beban gantung.')">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
+            <h3>Teori Katrol</h3>
+            <p>Materi sistem katrol, tegangan tali, dan hukum Newton</p>
+        </div>
+
+        <div class="card" onclick="showTeori('Energi', 'Materi Hukum Kekekalan Energi, Kalor Jenis ($Q = m \cdot c \cdot \Delta T$), perubahan wujud, serta efisiensi hantaran panas pada media air, oli, besi, dan kayu.')">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8H7z"/></svg>
+            <h3>Teori Energi</h3>
+            <p>Materi energi panas, kalor, dan perubahan suhu</p>
+        </div>
+
+        <div class="card" onclick="showTeori('SOP Praktikum', '1. Pilih menu simulasi yang diinginkan.<br>2. Klik tombol tambah komponen di Toolbox secara berurutan.<br>3. Atur parameter massa, sudut, atau koefisien gesek.<br>4. Klik Mulai Praktikum untuk melihat pergerakan dan hasil kalkulasi data.')">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-1-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            <h3>SOP Praktikum</h3>
+            <p>Langkah penggunaan virtual laboratorium fisika</p>
+        </div>
+
+        <div class="card" onclick="showPembuat()">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            <h3>Informasi Pembuat Web</h3>
+            <p>Lihat identitas pembuat virtual laboratorium fisika</p>
+        </div>
+    </div>
+</div>
+
+
+<div class="lab-interface" id="labInterface">
+    <button class="btn-back" onclick="backToMenu()">← Kembali ke Menu Utama</button>
+    <header>
+        <h1>Virtual Laboratorium Fisika</h1>
+        <p>Simulasi Bidang Miring, Katrol, dan Perubahan Energi</p>
+    </header>
+
+    <div class="menu">
+        <button onclick="setMode('miring')">Bidang Miring</button>
+        <button onclick="setMode('katrol')">Bidang + Katrol</button>
+        <button onclick="setMode('energi')">Perubahan Energi</button>
+    </div>
+
+    <div class="container">
+        <div class="toolbox">
+            <h2>Toolbox</h2>
+            <button onclick="tambahBidang()">Tambah Bidang</button>
+            <button onclick="tambahBalok()">Tambah Balok</button>
+            <button onclick="tambahKatrol()">Tambah Katrol</button>
+            <button onclick="tambahKompor()">Tambah Kompor</button>
+            <button onclick="tambahTermometer()">Tambah Termometer</button>
+            <button onclick="pauseSimulasi()">Pause</button>
+            <button onclick="resetSimulasi()">Reset</button>
+        </div>
+
+        <div class="canvas-box">
+            <canvas id="canvas" width="1000" height="550"></canvas>
+        </div>
+
+        <div class="control">
+            <h2>Kontrol Praktikum</h2>
+            <div class="step-box">
+                <p id="stepText">1. Tambahkan bidang miring</p>
+            </div>
+
+            <div class="input-group">
+                <label>Massa Balok Bidang</label>
+                <input type="range" id="massa" min="1" max="20" value="5">
+                <p id="massaText">5 kg</p>
+            </div>
+
+            <div class="input-group">
+                <label>Massa Beban Gantung</label>
+                <input type="range" id="massa2" min="1" max="20" value="8">
+                <p id="massa2Text">8 kg</p>
+            </div>
+
+            <div class="input-group">
+                <label>Sudut Bidang</label>
+                <input type="range" id="sudut" min="10" max="60" value="30">
+                <p id="sudutText">30°</p>
+            </div>
+
+            <div class="input-group">
+                <label>Koefisien Gesek</label>
+                <input type="range" id="gesek" min="0" max="1" step="0.1" value="0.2">
+                <p id="gesekText">0.2</p>
+            </div>
+
+            <button onclick="mulaiPraktikum()">Mulai Praktikum</button>
+
+            <div class="output">
+                <p id="timer">Waktu : 0.0 s</p>
+                <p id="gaya">Gaya : 0 N</p>
+                <p id="usaha">Usaha : 0 J</p>
+                <p id="ep">Energi Potensial : 0 J</p>
+                <p id="percepatan">Percepatan : 0 m/s²</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="globalModal">
+    <div class="modal-content">
+        <h2 id="modalTitle">Judul</h2>
+        <div id="modalBody"> Isi konten </div>
+        <br>
+        <button class="btn-close" onclick="closeModal()">Tutup</button>
+    </div>
+</div>
+
+<script>
+// --- LOGIKA NAVIGASI HALAMAN ---
+function openSimulasi(selectedMode) {
+    document.getElementById("mainMenu").style.display = "none";
+    document.getElementById("labInterface").style.display = "block";
+    setMode(selectedMode);
+}
+
+function backToMenu() {
+    document.getElementById("labInterface").style.display = "none";
+    document.getElementById("mainMenu").style.display = "block";
+    resetSimulasi();
+}
+
+function showTeori(title, text) {
+    document.getElementById("modalTitle").innerText = title;
+    document.getElementById("modalBody").innerHTML = `<p>${text}</p>`;
+    document.getElementById("globalModal").style.display = "flex";
+}
+
+function showPembuat() {
+    document.getElementById("modalTitle").innerText = "Informasi Pembuat Web";
+    document.getElementById("modalBody").innerHTML = `
+        <p>Aplikasi Virtual Laboratorium Fisika ini dirancang dan dikembangkan oleh:</p>
+        <ul>
+            <li>Arya Sandro</li>
+            <li>Amisha Sihite</li>
+            <li>Michelle Belinda</li>
+            <li>Yanti Aritonang</li>
+        </ul>
+    `;
+    document.getElementById("globalModal").style.display = "flex";
+}
+
+function closeModal() {
+    document.getElementById("globalModal").style.display = "none";
+}
+
+
+// --- LOGIKA SIMULASI FISIKA (KODE ASLI) ---
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+let mode = "miring";
+let bidangAda = false;
+let balokAda = false;
+let katrolAda = false;
+let komporAda = false;
+let termometerAda = false;
+
+let waktu = 0;
+let interval;
+let dragItem = null;
+
+let balok = {
+    posisi:0.5,
+    kecepatan:0,
+    jalan:false
+};
+
+let objekEnergi = [
+    { nama:"Air", warna:"#60a5fa", x:100, y:100, suhu:27, panasCepat:0.05 },
+    { nama:"Oli", warna:"#facc15", x:250, y:100, suhu:27, panasCepat:0.03 },
+    { nama:"Kayu", warna:"#92400e", x:400, y:100, suhu:27, panasCepat:0.02 },
+    { nama:"Besi", warna:"#9ca3af", x:550, y:100, suhu:27, panasCepat:0.01 }
+];
+
+massa.oninput = ()=>{ massaText.innerHTML = massa.value + " kg"; }
+massa2.oninput = ()=>{ massa2Text.innerHTML = massa2.value + " kg"; }
+sudut.oninput = ()=>{ sudutText.innerHTML = sudut.value + "°"; gambar(); }
+gesek.oninput = ()=>{ gesekText.innerHTML = gesek.value; }
+
+function tambahKompor(){ komporAda = true; gambar(); }
+function tambahTermometer(){ termometerAda = true; gambar(); }
+
+function mulaiTimer(){
+    waktu = 0;
+    clearInterval(interval);
+    interval = setInterval(()=>{
+        waktu += 0.1;
+        timer.innerHTML = "Waktu : " + waktu.toFixed(1) + " s";
+    },100);
+}
+
+function setMode(m){
+    mode = m;
+    gambar();
+}
+
+function updateLangkah(){
+    if(mode=="energi"){
+        stepText.innerHTML = "Drag benda ke atas kompor";
+        return;
+    }
+    if(!bidangAda){
+        stepText.innerHTML = "1. Tambahkan bidang miring";
+    } else if(!balokAda){
+        stepText.innerHTML = "2. Tambahkan balok";
+    } else if(mode == "katrol" && !katrolAda){
+        stepText.innerHTML = "3. Tambahkan katrol";
+    } else{
+        stepText.innerHTML = "4. Mulai praktikum";
+    }
+}
+
+function tambahBidang(){ bidangAda = true; updateLangkah(); gambar(); }
+function tambahBalok(){ if(!bidangAda) return; balokAda = true; updateLangkah(); gambar(); }
+function tambahKatrol(){ if(!balokAda) return; katrolAda = true; updateLangkah(); gambar(); }
+function pauseSimulasi(){ balok.jalan = false; }
+
+function resetSimulasi(){
+    bidangAda = false; balokAda = false; katrolAda = false;
+    komporAda = false; termometerAda = false;
+    balok.posisi = 0.5; balok.kecepatan = 0; balok.jalan = false;
+    clearInterval(interval);
+    objekEnergi.forEach((o,i)=>{
+        o.suhu = 27; o.x = 100 + (i*150); o.y = 100;
+    });
+    updateLangkah();
+    gambar();
+}
+
+function mulaiPraktikum(){
+    if(mode=="energi") return;
+    if(!balokAda) return;
+    mulaiTimer();
+
+    let m1 = parseFloat(massa.value);
+    let m2 = parseFloat(massa2.value);
+    let sudutVal = parseFloat(sudut.value);
+    let gesekVal = parseFloat(gesek.value);
+    let g = 9.8;
+    let theta = sudutVal * Math.PI/180;
+    let percepatan = 0;
+
+    if(mode == "miring"){
+        percepatan = g * (Math.sin(theta) - gesekVal * Math.cos(theta));
+    } else {
+        let resultan = (m2*g) - (m1*g*Math.sin(theta)) - (gesekVal*m1*g*Math.cos(theta));
+        percepatan = resultan / (m1+m2);
+    }
+
+    gaya.innerHTML = "Gaya : " + (m1*percepatan).toFixed(2) + " N";
+    usaha.innerHTML = "Usaha : " + ((m1*percepatan)*4).toFixed(2) + " J";
+    ep.innerHTML = "Energi Potensial : " + (m1*g*4*Math.sin(theta)).toFixed(2) + " J";
+    document.getElementById("percepatan").innerHTML = "Percepatan : " + percepatan.toFixed(2) + " m/s²";
+
+    balok.jalan = true;
+    gerakBalok(Math.abs(percepatan),m1,m2);
+}
+
+function gerakBalok(a,m1,m2){
+    function animasi(){
+        if(!balok.jalan) return;
+        balok.kecepatan += a*0.0005;
+
+        if(mode == "miring"){
+            balok.posisi += balok.kecepatan;
+        } else {
+            if(m2 > m1){ balok.posisi -= balok.kecepatan; }
+            else { balok.posisi += balok.kecepatan; }
+        }
+
+        if(balok.posisi >= 1){ balok.posisi = 1; balok.jalan = false; }
+        if(balok.posisi <= 0){ balok.posisi = 0; balok.jalan = false; }
+
+        gambar();
+        requestAnimationFrame(animasi);
+    }
+    animasi();
+}
+
+/* EVENT DRAG & DROP CODES */
+canvas.addEventListener("mousedown",(e)=>{
+    if(mode!="energi") return;
+    let rect = canvas.getBoundingClientRect();
+    let mx = e.clientX - rect.left;
+    let my = e.clientY - rect.top;
+    objekEnergi.forEach(obj=>{
+        if(mx > obj.x && mx < obj.x+70 && my > obj.y && my < obj.y+100){ dragItem = obj; }
+    });
+});
+
+canvas.addEventListener("mousemove",(e)=>{
+    if(!dragItem) return;
+    let rect = canvas.getBoundingClientRect();
+    dragItem.x = e.clientX - rect.left - 35;
+    dragItem.y = e.clientY - rect.top - 50;
+    gambar();
+});
+
+canvas.addEventListener("mouseup",()=>{ dragItem = null; });
+
+/* PROSES THERMAL */
+setInterval(()=>{
+    if(mode!="energi") return;
+    objekEnergi.forEach(obj=>{
+        if(komporAda && obj.x > 350 && obj.x < 620 && obj.y > 150){ obj.suhu += obj.panasCepat; }
+    });
+    gambar();
+},50);
+
+function gambar(){
+    ctx.clearRect(0,0,1000,550);
+    if(mode=="energi"){
+        ctx.fillStyle="#dbeafe"; ctx.fillRect(0,0,1000,550);
+        ctx.fillStyle="#8b5a2b"; ctx.fillRect(0,420,1000,130);
+        ctx.fillStyle="#111827"; ctx.font="bold 30px Arial";
+        ctx.fillText("Praktikum Perubahan Energi", 250, 50);
+
+        if(komporAda){
+            ctx.fillStyle="#374151"; ctx.fillRect(380,290,260,100);
+            for(let i=0;i<10;i++){
+                let api = 20 + Math.sin(Date.now()*0.01+i)*10;
+                ctx.beginPath();
+                ctx.fillStyle=`rgba(255,${100+i*10},0,0.9)`;
+                ctx.ellipse(430+i*18, 290-api, 10, api, 0, 0, Math.PI*2);
+                ctx.fill();
+            }
+        }
+
+        if(termometerAda){
+            ctx.fillStyle="white"; ctx.fillRect(900,120,20,200);
+            let max = 0;
+            objekEnergi.forEach(o=>{ if(o.suhu > max){ max = o.suhu; } });
+            ctx.fillStyle="red"; ctx.fillRect(905, 320-(max*2), 10, max*2);
+            ctx.beginPath(); ctx.arc(910, 330, 18, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle="black"; ctx.fillText(max.toFixed(1)+"°C", 850, 380);
+        }
+
+        objekEnergi.forEach(obj=>{
+            ctx.fillStyle="rgba(255,255,255,0.5)"; ctx.fillRect(obj.x, obj.y, 70, 100);
+            ctx.strokeStyle="white"; ctx.lineWidth=3; ctx.strokeRect(obj.x, obj.y, 70, 100);
+            ctx.fillStyle=obj.warna; ctx.fillRect(obj.x+5, obj.y+50, 60, 40);
+            ctx.fillStyle="black"; ctx.font="bold 18px Arial"; ctx.fillText(obj.nama, obj.x, obj.y-10);
+            ctx.fillStyle="red"; ctx.fillText(obj.suhu.toFixed(1)+"°C", obj.x, obj.y+125);
+
+            if(komporAda && obj.x > 350 && obj.x < 620 && obj.y > 150){
+                for(let i=0;i<5;i++){
+                    ctx.beginPath(); ctx.strokeStyle=`rgba(255,0,0,${Math.random()})`; ctx.lineWidth=4;
+                    ctx.moveTo(510,290); ctx.lineTo(obj.x+35, obj.y+80); ctx.stroke();
+                }
+            }
+        });
+        return;
+    }
+
+    ctx.fillStyle="#87ceeb"; ctx.fillRect(0,0,1000,550);
+    ctx.fillStyle="#7ec850"; ctx.fillRect(0,450,1000,100);
+    ctx.fillStyle="white";
+    ctx.beginPath();
+    ctx.arc(150 + Math.sin(Date.now()*0.001)*50, 80, 30, 0, Math.PI*2);
+    ctx.arc(180 + Math.sin(Date.now()*0.001)*50, 80, 35, 0, Math.PI*2);
+    ctx.arc(210 + Math.sin(Date.now()*0.001)*50, 80, 30, 0, Math.PI*2);
+    ctx.fill();
+
+    if(!bidangAda) return;
+
+    let sudutVal = parseFloat(sudut.value);
+    let panjang = 450;
+    let tinggi = Math.tan(sudutVal*Math.PI/180) * panjang;
+    let x1 = 150; let y1 = 450;
+    let x2 = x1 + panjang; let y2 = y1 - tinggi;
+
+    ctx.strokeStyle="#5b2c06"; ctx.lineWidth=12;
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+    ctx.fillStyle="#8b5a2b"; ctx.fillRect(x2-20, y2, 40, tinggi);
+
+    if(balokAda){
+        let p = balok.posisi;
+        let boxX = x2 - (panjang*p);
+        let boxY = y2 + (tinggi*p);
+        let angle = Math.atan2(tinggi,panjang);
+
+        ctx.save();
+        ctx.translate(boxX, boxY-25); ctx.rotate(angle);
+        ctx.fillStyle="#d2b48c"; ctx.fillRect(-25,-25,50,50);
+        ctx.strokeStyle="#333"; ctx.strokeRect(-25,-25,50,50);
+        ctx.restore();
+
+        ctx.strokeStyle="red"; ctx.lineWidth=5;
+        ctx.beginPath(); ctx.moveTo(boxX,boxY-25); ctx.lineTo(boxX,boxY+60); ctx.stroke();
+
+        if(mode=="katrol" && katrolAda){
+            ctx.save();
+            ctx.translate(x2+10, y2+10); ctx.rotate(Date.now()*0.002);
+            ctx.beginPath(); ctx.arc(0, 0, 30, 0, Math.PI*2);
+            ctx.fillStyle="#444"; ctx.fill();
+            ctx.restore();
+
+            let bebanY = 400 - (p*220);
+            ctx.strokeStyle="black"; ctx.lineWidth=4;
+            ctx.beginPath(); ctx.moveTo(boxX,boxY);
+            ctx.lineTo(x2+10, y2+10); ctx.lineTo(x2+10, bebanY); ctx.stroke();
+
+            ctx.fillStyle="#999"; ctx.fillRect(x2-10, bebanY, 40, 50);
+        }
+    }
+}
+
+updateLangkah();
+gambar();
+</script>
+
+</body>
+</html>
